@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <title>Hola de Ejemplo</title>
+</head>
+
+<body>
+
+    <div class="fondoDinamico"></div>
+    
+    <img class="logo" src="https://media.giphy.com/media/kuWN0iF9BLQKk/giphy.gif">
+    
+    <div class="login">
+        <!-- ACTION = LA RUTA DEL ARCHIVO DONDE ENVIAMOS LOS DATOS DEL FORMULARIO -->
+        <form name="formuLogin" action="" method="GET">
+            <input id="correo" type="email" name="mail" placeholder="Email">
+            <input id="clave" type="password" name="pass" placeholder="Contraseña">
+            <button id="entrar" type="submit">Entrar</button>
+        </form>
+        <span class="registrate">Regístrate >></span>
+    </div>
+
+    <div id="registro" class="registro">
+        <form name="formuRegistro" action="" method="GET">
+            <input type="text" name="nombre" placeholder="nombre">
+            <input type="text" name="apellidos" placeholder="Apellidos">
+            <input type="email" name="mail" placeholder="Email">
+            <input type="password" name="pass" placeholder="Contraseña">
+            <button type="submit">Registrar</button>
+        </form>
+        <span class="volver"><< Inicio Sesión</span>
+    </div>
+
+
+
+    
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+    <!--<script type="text/javascript" src="cordova.js"></script>-->
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        $(".registrate").click(function(){
+            $(".fondoDinamico").css("transform", "translateX(-30%)");
+            $(".login").css("left", "-100%");
+            $(".registro").css("left", "0%");
+            $(".logo").css("top", "20%");
+            $(".logo").css("width", "30%");
+        });
+
+        $(".volver").click(function(){
+            $(".fondoDinamico").css("transform", "translateX(0%)");
+            $(".login").css("left", "0%");
+            $(".registro").css("left", "100%");
+            $(".logo").css("top", "30%");
+            $(".logo").css("width", "50%");
+        });
+
+        $("#entrar").click(function(){
+            var peticion = new XMLHttpRequest();
+            peticion.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200) {
+                    var usuario = JSON.parse(this.responseText);
+                    var i = usuario.length-1;
+                    var existe = false;
+                    while (i >= 0){
+                        //alert(usuario[i].correo_usuario+" "+ usuario[i].clave_usuario);
+                        if (correo == usuario[i].correo_usuario && clave == usuario[i].clave_usuario) {
+                            existe = true;
+                            //entrar();
+                            window.location = "usuario.html";
+                            alert("Bienvenid@!!!");
+
+                        }
+                        i--;
+                    }
+                    if (existe == false) {
+                        alert("Incorrecto");
+                    }
+                    
+                }
+            }
+
+            peticion.open("GET", "http://www.samcrugom.com/app/acceso.app.php", true);
+            peticion.send();
+
+            function entrar(){
+                window.location = "usuario.html";
+            }
+
+            var correo = document.getElementById('correo').value;
+            var clave = document.getElementById('clave').value;
+            alert("Correo: "+correo+" Contraseña: "+clave);
+        });
+    </script>
+
+</body>
+
+</html>

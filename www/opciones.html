@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+
+    <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">-->
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <title>Hola de Ejemplo</title>
+</head>
+
+<body id="cuerpo">
+
+    <div class="fondoDinamico"></div>
+    
+    <div class="main">
+        <nav>
+            <a href="chat.html">
+                <img class="fotoUsuario" src="https://vignette.wikia.nocookie.net/pokecreated/images/6/60/Pokeball_desktop_icon_by_beccerberry-d3b98cf.png/revision/latest?cb=20150418224205&path-prefix=es">
+            </a>
+            <span class="nombreUsuario"></span>
+        </nav>
+        <div id="panelChat" class="panelChat">
+            <form name="formuOpciones" action="" method="GET" id="formuOpciones">
+                <input type="text" name="nombre" placeholder="Nombre" value="" id="nombre">
+                <input type="text" name="apellido" placeholder="Apellido" value="" id="apellido">
+                <input type="mail" name="correo" placeholder="Correo" value="" id="correo">
+                <input type="password" name="clave" placeholder="Contraseña" value="" id="clave">
+                <input type="date" name="fechaNac" placeholder="Fecha de Nacimiento" value="" id="fecha">
+                <input type="button" name="envia" id="envia" value="GUARDAR">
+            </form>
+        </div>
+    </div>
+        
+
+    
+
+
+    
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+    <!--<script type="text/javascript" src="cordova.js"></script>-->
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        //localStorage.getItem("identificadorcito");
+        //localStorage.getItem("nombrecito");
+
+        document.getElementById('nombre').value = localStorage.getItem("nombrecito");
+        document.getElementById('apellido').value = localStorage.getItem("apellidito");
+        document.getElementById('correo').value = localStorage.getItem("correito");
+        document.getElementById('clave').value = localStorage.getItem("clavecita");
+        document.getElementById('fecha').value = localStorage.getItem("fechita");
+
+        $(document).ready(function(){
+            $("#envia").click(function(){
+                var nombre = document.getElementById('nombre').value;
+                var apellido = document.getElementById('apellido').value;
+                var correo = document.getElementById('correo').value;
+                var clave = document.getElementById('clave').value;
+                var fechaNac = document.getElementById('fecha').value;
+                if (nombre == "" || nombre == null) {
+                    alert("No puede dejar el NOMBRE vacío");
+                    return false;
+                }else if (apellido == "" || apellido == null) {
+                    alert("No puede dejar el APELLIDO vacío");
+                    return false;
+                }else if (correo == "" || correo == null) {
+                    alert("No puede dejar el CORREO vacío");
+                    return false;
+                }else if (clave == "" || clave == null) {
+                    alert("No puede dejar la CONTRASEÑA vacío");
+                    return false;
+                }else if (fecha == "" || fecha == null) {
+                    alert("No puede dejar la FECHA DE NACIMIENTO vacío");
+                    return false;
+                }else{
+                    if (nombre != localStorage.getItem("nombrecito")) {
+                        console.log("Has cambiado el nombre");
+                        $.get("http://www.samcrugom.com/app/editarPerfil.app.php", {
+                            idUsuario: localStorage.getItem("identificadorcito"),
+                            nombreUsuario: nombre
+                        }, function(resultado, status){
+                            console.log(resultado); //pinta en consola el resultado de los echos del PHP.
+                            localStorage.setItem("nombrecito", nombre);
+                        });
+                    }
+                    if (apellido != localStorage.getItem("apellidito")) {
+                        console.log("Has cambiado el apellido");
+                        $.get("http://www.samcrugom.com/app/editarPerfil.app.php", {
+                            idUsuario: localStorage.getItem("identificadorcito"),
+                            apellidoUsuario: apellido
+                        }, function(resultado, status){
+                            console.log(resultado);
+                            localStorage.setItem("apellidito", apellido);
+                        });
+                    }
+                    if (correo != localStorage.getItem("correito")) {
+                        console.log("Has cambiado el correo");
+                        $.get("http://www.samcrugom.com/app/editarPerfil.app.php", {
+                            idUsuario: localStorage.getItem("identificadorcito"),
+                            correoUsuario: correo
+                        }, function(resultado, status){
+                            console.log(resultado);
+                            localStorage.setItem("correito", correo);
+                        });
+                    }
+                    if (clave != localStorage.getItem("clavecita")) {
+                        console.log("Has cambiado la clave");
+                        $.get("http://www.samcrugom.com/app/editarPerfil.app.php", {
+                            idUsuario: localStorage.getItem("identificadorcito"),
+                            claveUsuario: clave
+                        }, function(resultado, status){
+                            console.log(resultado);
+                            localStorage.setItem("clavecita", clave);
+                        });
+                    }
+                    if (fechaNac != localStorage.getItem("fechita")) {
+                        console.log("Has cambiado la fecha de nacimiento");
+                        $.get("http://www.samcrugom.com/app/editarPerfil.app.php", {
+                            idUsuario: localStorage.getItem("identificadorcito"),
+                            fechaUsuario: fechaNac
+                        }, function(resultado, status){
+                            console.log(resultado);
+                            localStorage.setItem("fechita", fechaNac);
+                        });
+                    }
+                        
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

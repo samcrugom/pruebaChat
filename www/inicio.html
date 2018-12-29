@@ -17,25 +17,26 @@
 
     <div class="fondoDinamico"></div>
     
-    <img class="logo" src="https://media.giphy.com/media/kuWN0iF9BLQKk/giphy.gif">
+    <img class="logo" src="https://i.gifer.com/Pan.gif" style="border-radius: 50%;">
     
     <div class="login">
         <!-- ACTION = LA RUTA DEL ARCHIVO DONDE ENVIAMOS LOS DATOS DEL FORMULARIO -->
         <form name="formuLogin" action="" method="GET">
             <input id="correo" type="email" name="mail" placeholder="Email">
             <input id="clave" type="password" name="pass" placeholder="Contraseña">
-            <button id="entrar" type="submit">Entrar</button>
+            <button id="entrar" type="button">Entrar</button>
         </form>
         <span class="registrate">Regístrate >></span>
     </div>
 
     <div id="registro" class="registro">
         <form name="formuRegistro" action="" method="GET">
-            <input type="text" name="nombre" placeholder="nombre">
-            <input type="text" name="apellidos" placeholder="Apellidos">
-            <input type="email" name="mail" placeholder="Email">
-            <input type="password" name="pass" placeholder="Contraseña">
-            <button type="submit">Registrar</button>
+            <input type="text" name="nombre" placeholder="nombre" id="name">
+            <input type="text" name="apellidos" placeholder="Apellidos" id="surname">
+            <input type="email" name="correo" placeholder="Email" id="mail">
+            <input type="password" name="clave" placeholder="Contraseña" id="pass">
+            <input type="date" name="fechaNac" placeholder="dd/mm/aaaa" id="date">
+            <button id="registrar" type="button">Registrar</button>
         </form>
         <span class="volver"><< Inicio Sesión</span>
     </div>
@@ -64,6 +65,7 @@
             $(".logo").css("width", "50%");
         });
 
+        /*
         $("#entrar").click(function(){
             var peticion = new XMLHttpRequest();
             peticion.onreadystatechange = function(){
@@ -99,6 +101,66 @@
             var correo = document.getElementById('correo').value;
             var clave = document.getElementById('clave').value;
             alert("Correo: "+correo+" Contraseña: "+clave);
+        });
+        */
+
+        $(document).ready(function(){                                               //    Espera que el documento esté cargado para realizar el script.
+            $("#entrar").click(function(){
+                var correo = document.getElementById('correo').value;
+                var clave = document.getElementById('clave').value;
+                $.ajax({                                                            //  Ejecuto la petición AJAX.
+                    url:"http://www.samcrugom.com/app/acceso.app.php",        //  URL con la cuál debe comunicarse AJAX.
+                    type: "GET",                                                    //  Método (para aplicaciones solo se permite GET)
+                    async: true,                                                    //  delega (los pone a todos en cola)
+                    success: function(){                                            //  Si consigue conectarse:
+                        //console.log("He podido cargar el archivo");               //  Probamos
+                        $.getJSON("http://www.samcrugom.com/app/acceso.app.php", function(usuarios){ //Leémos el JSON
+                            var existe = false;
+                            $.each(usuarios, function(i, usuario){
+                                //console.log(usuario.nombre_usuario);              //  Probamos
+                                if (usuario.correo_usuario == correo && usuario.clave_usuario == clave) {
+                                    existe = true;
+                                    //console.log("Bienvenido@ "+usuario.nombre_usuario); //Probamos
+                                    localStorage.setItem("nombrecito", usuario.nombre_usuario);
+                                    localStorage.setItem("identificadorcito", usuario.id_usuario);
+                                    localStorage.setItem("apellidito", usuario.apellido_usuario);
+                                    localStorage.setItem("correito", usuario.correo_usuario);
+                                    localStorage.setItem("clavecita", usuario.clave_usuario);
+                                    localStorage.setItem("fechita", usuario.fechaNac_usuario);
+                                    localStorage.setItem("fotito", usuario.foto_usuario);
+                                    window.location = "usuario.html";
+                                }
+                            });
+                            if (existe == false) {
+                                alert("Usuario y/o Contraseña Incorrectos");
+                            }
+                        });
+                    },
+                    error: function(){
+                        console.log("Error al cargar el archivo");
+                    }
+                });
+            });
+
+            $("#registrar").click(function(){
+                console.log("Has pulsado 'Registro'");
+                var name = document.getElementById('name').value;
+                var surname = document.getElementById('surname').value;
+                var mail = document.getElementById('mail').value;
+                var pass = document.getElementById('pass').value;
+                var fecha = document.getElementById('date').value;
+                $.get("http://www.samcrugom.com/app/registro.app.php", {
+                    nombrecito: name,
+                    apellidito: surname,
+                    correito: mail,
+                    clavecita: pass,
+                    fechita: fecha
+                }, function(registro, status){  //  Te pinta en consola el resultado del PHP7
+                    console.log(registro);
+                    window.location = "index.html";
+                });
+            });
+                
         });
     </script>
 

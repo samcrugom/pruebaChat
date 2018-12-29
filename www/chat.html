@@ -20,13 +20,17 @@
     
     <div class="main">
         <nav>
-            <img class="fotoUsuario" src="https://vignette.wikia.nocookie.net/pokecreated/images/6/60/Pokeball_desktop_icon_by_beccerberry-d3b98cf.png/revision/latest?cb=20150418224205&path-prefix=es">
-            <span class="nombreUsuario">Nombre Usuario</span>
+            <a href="usuario.html">
+                <img class="fotoUsuario" src="https://vignette.wikia.nocookie.net/pokecreated/images/6/60/Pokeball_desktop_icon_by_beccerberry-d3b98cf.png/revision/latest?cb=20150418224205&path-prefix=es">
+            </a>
+            <span class="nombreUsuario"></span>
+            <a href="opciones.html">Opciones</a>
         </nav>
-        <div class="panelChat">
+        <div id="panelChat" class="panelChat">
+            <div class="conversacion" id="conversa"></div>
             <form name="" action="" method="">
-                <input class="inputChat" type="text" name="" placeholder="Escrime aquí">
-                <button type="button" name="envia"></button> 
+                <input class="inputChat" type="text" name="" placeholder="Escrime aquí" id="mensaje">
+                <input type="button" name="envia" id="envia"> 
             </form>
         </div>
     </div>
@@ -38,10 +42,120 @@
     
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
-    <!--<script type="text/javascript" src="cordova.js"></script>-->
-    <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript">
-        app.initialize();
+        var ruta = document.URL;
+        var posicionInterrogacion = ruta.indexOf("="); //busca la posicion de: "=".--> el resultado es el ID.
+        var logintudRuta = ruta.length;
+        var ruta = ruta.substr(posicionInterrogacion+1, logintudRuta);
+        var idUsu = ruta;
+        var emisor = localStorage.getItem("identificadorcito");
+        
+        
+
+        
+        //setInterval(function(){
+        //document.getElementById('conversa').scrollBottom=0;});
+        
+        $(document).ready(function(){
+            $.ajax({
+                url:"http://www.samcrugom.com/app/acceso.app.php",
+                type: "GET",                                            
+                async: true,
+                success: function(){
+                    $.getJSON("http://www.samcrugom.com/app/acceso.app.php", function(usuarios){
+                        $.each(usuarios, function(i, usuario){
+                            if (usuario.id_usuario == idUsu) {
+                                $(".nombreUsuario").append(usuario.nombre_usuario);
+                            }
+                        });
+                    });
+                },
+                error: function(){}
+            });
+
+            $("#envia").click(function(){
+                var mensajito = document.getElementById('mensaje').value;
+                if (mensajito == null || mensajito == "") {
+                    return false;
+                }else{
+                    $.get("http://www.samcrugom.com/app/chat.app.php", {
+                        idUsu: idUsu,
+                        idEmi: emisor,
+                        mnsj: mensajito
+                    }, function(usuario, status){
+                        consolte.log(status);
+                    });
+                    document.getElementById('mensaje').value = "";
+                }
+                    
+
+                //VOLVEMOS A PINTAR LOS MENSAJES CUANDO ENVIAMOS UNO.
+                /*
+                $.get("http://www.samcrugom.com/app/conversacion.app.php", {
+                    idUsu: idUsu,
+                    idEmi: emisor
+                }, function(mensajes, status){
+                    document.getElementById('conversa').innerHTML = "";
+                    $.each(mensajes, function(i, mensaje){
+                        if (mensaje.emisor_chat == emisor) {
+                            $(".conversacion").append("<p class='emisor'>"+mensaje.mensaje_chat+"</p>");
+                        }else{
+                            $(".conversacion").append("<p class='receptor'>"+mensaje.mensaje_chat+"</p>");
+                        }
+                        $(".conversacion").append("<div style='clear: both;'></div>");
+                    });
+                });
+                */
+
+            });
+            //  PINTAMOS LOS MENSAJES
+
+            $.get("http://www.samcrugom.com/app/conversacion.app.php", {
+                idUsu: idUsu,
+                idEmi: emisor
+            }, function(mensajes, status){
+
+                var cuentaMensajes = mensajes.length;
+                setInterval(function(){
+                    $.get("http://www.samcrugom.com/app/conversacion.app.php", {
+                        idUsu: idUsu,
+                        idEmi: emisor
+                    }, function(mensajes, status){
+                        var cuentaNuevosMensajes = mensajes.length;
+                        if (cuentaMensajes != cuentaNuevosMensajes) {
+                            document.getElementById('conversa').innerHTML = "";
+                            $.each(mensajes, function(i, mensaje){
+                                if (mensaje.emisor_chat == emisor) {
+                                    $(".conversacion").append("<p class='emisor'>"+mensaje.mensaje_chat+"<span>"+mensaje.fecha_chat+"<br></span></p>");
+                                }else{
+                                    $(".conversacion").append("<p class='receptor'>"+mensaje.mensaje_chat+"<span>"+mensaje.fecha_chat+"<br></span></p>");
+                                }
+                                $(".conversacion").append("<div style='clear: both;'></div>");
+                            });
+                            cuentaMensajes = cuentaNuevosMensajes;
+                            var alto = document.getElementById('conversa').scrollHeight;
+                            //alert(alto);
+                            $("#conversa").animate({
+                                scrollTop: alto
+                            }, 1000);
+                        }
+                    });
+                }, 500);
+                $.each(mensajes, function(i, mensaje){
+                    if (mensaje.emisor_chat == emisor) {
+                        $(".conversacion").append("<p class='emisor'>"+mensaje.mensaje_chat+"<br><span>"+mensaje.fecha_chat+"</span></p>");
+                    }else{
+                        $(".conversacion").append("<p class='receptor'>"+mensaje.mensaje_chat+"<br><span>"+mensaje.fecha_chat+"</span></p>");
+                    }
+                    $(".conversacion").append("<div style='clear: both;'></div>");
+                });
+                var alto = document.getElementById('conversa').scrollHeight;
+                //alert(alto);
+                $("#conversa").animate({
+                    scrollTop: alto
+                }, 1000);
+            });
+        });
     </script>
 </body>
 

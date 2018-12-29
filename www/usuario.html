@@ -38,11 +38,14 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript">
         function irAChat(){
-            window.location = "chat.html";
+            $("#usuario").css("transform", "scale(1.7);");
+            setTimeout(function(){
+                window.location = "chat.html";
+            }, 1);
         }
-
         //  PINTAR USUARIOS:
-
+        //  1er MÉTODO-----> Extraer todo el JSON
+        /*
         var peticion = new XMLHttpRequest();
         peticion.onreadystatechange = function(){
             if (this.readyState == 4 && this.status == 200) {
@@ -56,12 +59,7 @@
                     chat.setAttribute('onclick', 'irAChat()');
                     var usu = 'usuario'+i;
                     chat.setAttribute('id', usu);
-                    /*$("#"+usu).click(function(){
-                        irAChat();
-                    });*/
-
-
-
+        
                     var brillo = document.createElement('div');
                     brillo.setAttribute('class', 'brillo');
 
@@ -92,6 +90,56 @@
 
         peticion.open("GET", "http://www.samcrugom.com/app/acceso.app.php", true);
         peticion.send();
+        */
+
+        //  2º MÉTODO-----> consultar el JSON y que pinte lo que quiero:
+        $("#usuario").html(localStorage.getItem("nombrecito"));
+        var longitudJSON = "";
+        $(document).ready(function(){
+            $.ajax({                                                    
+                url:"http://www.samcrugom.com/app/acceso.app.php",
+                type: "GET",                                            
+                async: true,                                            
+                success: function(){                                   
+                    $.getJSON("http://www.samcrugom.com/app/acceso.app.php", function(usuarios){ 
+                        longitudJSON = usuarios.length;
+                        $.each(usuarios, function(i, usuario){
+                            if (usuario.id_usuario != localStorage.getItem("identificadorcito")) {
+                                $(".panel").append("<a href='chat.html?idUsu="+usuario.id_usuario+"'><div class='usuario'><div class='brillo'></div><div class='cajon'><img class='fotoUsuario' src='https://vignette.wikia.nocookie.net/pokecreated/images/6/60/Pokeball_desktop_icon_by_beccerberry-d3b98cf.png/revision/latest?cb=20150418224205&path-prefix=es'><span class='nombreUsuario'>"+usuario.nombre_usuario+"</span></div></div></a>");
+                            }  
+                        });
+                    });
+                },
+                error: function(){
+                    console.log("Error al cargar el archivo");
+                }
+            });
+
+            setInterval(function(){
+                $.ajax({                                                    
+                url:"http://www.samcrugom.com/app/acceso.app.php",
+                type: "GET",                                            
+                async: true,                                            
+                success: function(){                                   
+                    $.getJSON("http://www.samcrugom.com/app/acceso.app.php", function(usuarios){ 
+                        var longitudNuevaJSON = usuarios.length;
+                        if (longitudJSON != longitudNuevaJSON) {
+                            $.each(usuarios, function(i, usuario){
+                                if (usuario.id_usuario != localStorage.getItem("identificadorcito")) {
+                                    $(".panel").append("<a href='chat.html?idUsu="+usuario.id_usuario+"'><div class='usuario'><div class='brillo'></div><div class='cajon'><img class='fotoUsuario' src='https://vignette.wikia.nocookie.net/pokecreated/images/6/60/Pokeball_desktop_icon_by_beccerberry-d3b98cf.png/revision/latest?cb=20150418224205&path-prefix=es'><span class='nombreUsuario'>"+usuario.nombre_usuario+"</span></div></div></a>");
+                                }  
+                            });
+                        }
+                            
+                    });
+                },
+                error: function(){
+                    console.log("Error al cargar el archivo");
+                }
+            });
+            }, 1000);
+        });
+
     </script>
 </body>
 
